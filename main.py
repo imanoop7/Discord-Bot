@@ -3,6 +3,7 @@ import os
 import requests
 import json
 from dotenv import load_dotenv
+import random
 
 load_dotenv()
 
@@ -10,6 +11,10 @@ load_dotenv()
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
+
+sad_words = ['sad', 'depressed', 'unhappy', 'angry', "miserable", "derpressing"]
+
+starter_encouragements = ["Cheer up!", "Hang in there", "You are a great person / bot!"]
 
 def get_quote():
     """Retrieves a random quote from the ZenQuotes API.
@@ -49,10 +54,15 @@ async def on_message(message):
     
     if message.author == client.user:
         return
+    
+    msg = message.content.lower()
 
-    if message.content.startswith('$inspire'):
+    if msg.startswith('$inspire'):
         quote = get_quote()
         await message.channel.send(quote)
+    
+    if any(word in msg for word in sad_words):
+        await message.channel.send(random.choice)
 
 
 
