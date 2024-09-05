@@ -78,12 +78,23 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    """Called when a message is sent in any channel the bot can see.
-    
-    If the message is sent by the bot itself, this function does nothing.
-    Otherwise, if the message starts with '$hello', this function sends a
-    message to the same channel with the content 'Hello!'.
-    """
+
+    """This function is called when a message is sent in any channel that the
+    bot can see. It checks if the message author is the bot itself, and if
+    so, it returns without doing anything.
+
+    Otherwise, it checks if the message starts with various commands and
+    performs different actions based on the command.
+
+    The possible commands are:
+
+    - $inspire: sends a random inspirational quote
+    - $new <message>: adds a new encouragement to the list of encouragements
+    - $del <index>: deletes an encouragement from the list of encouragements
+    - $list: sends a list of all the encouragements
+    - $responding <true/false>: turns responding on or off. If set to true,
+        the bot will respond with an encouragement if it sees a sad word in
+        the message. If set to false, the bot won't respond to anything."""
     
     if message.author == client.user:
         return
@@ -120,6 +131,17 @@ async def on_message(message):
         if "encouragements" in db.keys():
             encouragements = db["encouragements"]
         await message.channel.send(encouragements)
+
+    if msg.startswith("$responding"):
+        value = msg.split("$responding ",1)[1]
+
+        if value.lower() == "true":
+            db["responding"] = True
+            await message.channel.send("Responding is on.")
+        else:
+            db["responding"] = False
+            await message.channel.send("Responding is off.")
+
 
 
 
