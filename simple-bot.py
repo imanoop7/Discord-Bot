@@ -4,10 +4,13 @@ import requests
 import json
 from dotenv import load_dotenv
 import random
+import pymongo
 
 load_dotenv()
 
-
+db_client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = db_client["mydatabase"]
+collection = db["mycollection"]
 
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
@@ -101,6 +104,22 @@ async def on_message(message):
 
     if msg.startswith("$new"):
         encouraging_message = msg.split("$new ",1)[1]
+        update_encouragements(encouraging_message)
+        await message.channel.send("New Encouragement added.")
+
+    if msg.startswith("$del"):
+        encouragements = []
+        if "encouragements" in db.keys():
+            index = int(msg.split("$del",1)[1])
+            delete_encouragment(index)
+            encouragements = db["encouragements"]
+        await message.channel.send(encouragements)
+
+    if msg.startswith("$list"):
+        encouragements = []
+        if "encouragements" in db.keys():
+            encouragements = db["encouragements"]
+        await message.channel.send(encouragements)
 
 
 
