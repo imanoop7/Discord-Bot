@@ -33,6 +33,36 @@ def get_quote():
     print(f"Returning quote: {quote}")
     return(quote)
 
+
+def update_encouragements(encouraging_message):
+    """Updates the list of encouragements in the database with a new message.
+
+    If the list does not exist, this function creates it with the given message.
+    Otherwise, it appends the message to the existing list.
+
+    Args:
+        encouraging_message (str): The message to add to the list of
+            encouragements.
+    """
+    if "encouragements" in db.keys():
+        encouragements = db["encouragements"]
+        encouragements.append(encouraging_message)
+        db["encouragements"] = encouragements
+    else:
+        db["encouragements"] = [encouraging_message]
+
+
+def delete_encouragment(index):
+    """Deletes an encouragement from the database at a given index.
+
+    Args:
+        index (int): The index of the encouragement to delete.
+    """
+    encouragements = db["encouragements"]
+    if len(encouragements) > index:
+        del encouragements[index]
+        db["encouragements"] = encouragements
+
 @client.event
 async def on_ready():
     """Prints a message when the bot is ready.
@@ -60,9 +90,17 @@ async def on_message(message):
     if msg.startswith('$inspire'):
         quote = get_quote()
         await message.channel.send(quote)
+
+    options = starter_encouragements
+
+    if "encouragements" in db.keys():
+        options = options + db["encouragements"]
     
     if any(word in msg for word in sad_words):
-        await message.channel.send(random.choice)
+        await message.channel.send(random.choice(options))
+
+    if msg.startswith("$new"):
+        encouraging_message = msg.split("$new ",1)[1]
 
 
 
