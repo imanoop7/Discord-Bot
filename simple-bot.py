@@ -13,6 +13,7 @@ db = db_client["mydatabase"]
 collection = db["mycollection"]
 
 intents = discord.Intents.default()
+intents.message_content = True  # Enable the message content intent
 client = discord.Client(intents=intents)
 
 sad_words = ['sad', 'depressed', 'unhappy', 'angry', "miserable", "derpressing"]
